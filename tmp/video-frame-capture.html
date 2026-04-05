@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Frame Capture</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #111;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+      }
+
+      video {
+        width: 1280px;
+        max-width: 100vw;
+        height: auto;
+        display: block;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <video
+      id="video"
+      muted
+      playsinline
+      preload="auto"
+      src="file:///C:/Users/Turjoy/Desktop/06.04.2026_03.18.21_REC.mp4"
+    ></video>
+
+    <script>
+      const video = document.getElementById("video");
+      const params = new URLSearchParams(window.location.search);
+      const seekTime = Number(params.get("t") || "0");
+
+      const finalize = () => {
+        window.__captureReady = true;
+        document.body.dataset.ready = "true";
+      };
+
+      video.addEventListener("loadedmetadata", () => {
+        const boundedTime = Math.min(
+          Math.max(seekTime, 0),
+          Math.max(video.duration - 0.05, 0)
+        );
+        video.currentTime = boundedTime;
+      });
+
+      video.addEventListener("seeked", () => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(finalize);
+        });
+      });
+    </script>
+  </body>
+</html>
